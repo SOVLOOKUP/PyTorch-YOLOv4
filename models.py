@@ -232,7 +232,7 @@ class YOLOLayer(nn.Module):
 
 
 class Darknet(nn.Module):
-    """YOLOv3 object detection model"""
+    """YOLOv4 object detection model"""
 
     def __init__(self, config_path, img_size=416):
         super(Darknet, self).__init__()

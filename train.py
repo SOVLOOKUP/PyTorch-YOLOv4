@@ -1,5 +1,5 @@
 from __future__ import division
-
+# "D:/Desktop/PyTorch-YOLOv4/
 from models import *
 from utils.logger import *
 from utils.utils import *
@@ -27,8 +27,8 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=100, help="number of epochs")
     parser.add_argument("--batch_size", type=int, default=8, help="size of each image batch")
     parser.add_argument("--gradient_accumulations", type=int, default=2, help="number of gradient accums before step")
-    parser.add_argument("--model_def", type=str, default="config/yolov3.cfg", help="path to model definition file")
-    parser.add_argument("--data_config", type=str, default="config/coco.data", help="path to data config file")
+    parser.add_argument("--model_def", type=str, default="config/yolov4-captcha.cfg", help="path to model definition file")
+    parser.add_argument("--data_config", type=str, default="config/captcha.data", help="path to data config file")
     parser.add_argument("--pretrained_weights", type=str, help="if specified starts from checkpoint model")
     parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
     parser.add_argument("--img_size", type=int, default=416, help="size of each image dimension")
@@ -43,17 +43,19 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    rootdir = os.path.abspath(os.path.dirname(__file__)) + '\\'
     os.makedirs("output", exist_ok=True)
     os.makedirs("checkpoints", exist_ok=True)
 
     # Get data configuration
-    data_config = parse_data_config(opt.data_config)
-    train_path = data_config["train"]
-    valid_path = data_config["valid"]
-    class_names = load_classes(data_config["names"])
+    data_config = parse_data_config(rootdir + opt.data_config)
+    train_path = rootdir + data_config["train"]
+    valid_path = rootdir + data_config["valid"]
+    class_names = load_classes(rootdir + data_config["names"])
 
+    
     # Initiate model
-    model = Darknet(opt.model_def).to(device)
+    model = Darknet(rootdir + opt.model_def).to(device)
     model.apply(weights_init_normal)
 
     # If specified we start from checkpoint
@@ -64,7 +66,7 @@ if __name__ == "__main__":
             model.load_darknet_weights(opt.pretrained_weights)
 
     # Get dataloader
-    dataset = ListDataset(train_path, augment=True, multiscale=opt.multiscale_training)
+    dataset = ListDataset(train_path,rootdir, augment=True, multiscale=opt.multiscale_training)
     dataloader = torch.utils.data.DataLoader(
         dataset,
         batch_size=opt.batch_size,
@@ -175,4 +177,4 @@ if __name__ == "__main__":
             print(f"---- mAP {AP.mean()}")
 
         if epoch % opt.checkpoint_interval == 0:
-            torch.save(model.state_dict(), f"checkpoints/yolov3_ckpt_%d.pth" % epoch)
+            torch.save(model.state_dict(), f"checkpoints/yolov4_ckpt_%d.pth" % epoch)

@@ -1,94 +1,58 @@
-# PyTorch-YOLOv3
-A minimal PyTorch implementation of YOLOv3, with support for training, inference and evaluation.
+# PyTorch-YOLOv4
 
-## Installation
-##### Clone and install requirements
-    $ git clone https://github.com/eriklindernoren/PyTorch-YOLOv3
-    $ cd PyTorch-YOLOv3/
-    $ sudo pip3 install -r requirements.txt
+YOLOv4的最小PyTorch实现，并支持训练，推断和评估，基于 [https://github.com/eriklindernoren/PyTorch-YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) & [https://github.com/Python3WebSpider/DeepLearningSlideCaptcha](https://github.com/Python3WebSpider/DeepLearningSlideCaptcha)修改。
 
-##### Download pretrained weights
-    $ cd weights/
-    $ bash download_weights.sh
+## 克隆项目
 
-##### Download COCO
-    $ cd data/
-    $ bash get_coco_dataset.sh
-    
-## Test
-Evaluates the model on COCO test.
+### 克隆部署命令
 
-    $ python3 test.py --weights_path weights/yolov3.weights
-
-| Model                   | mAP (min. 50 IoU) |
-| ----------------------- |:-----------------:|
-| YOLOv3 608 (paper)      | 57.9              |
-| YOLOv3 608 (this impl.) | 57.3              |
-| YOLOv3 416 (paper)      | 55.3              |
-| YOLOv3 416 (this impl.) | 55.5              |
-
-## Inference
-Uses pretrained weights to make predictions on images. Below table displays the inference times when using as inputs images scaled to 256x256. The ResNet backbone measurements are taken from the YOLOv3 paper. The Darknet-53 measurement marked shows the inference time of this implementation on my 1080ti card.
-
-| Backbone                | GPU      | FPS      |
-| ----------------------- |:--------:|:--------:|
-| ResNet-101              | Titan X  | 53       |
-| ResNet-152              | Titan X  | 37       |
-| Darknet-53 (paper)      | Titan X  | 76       |
-| Darknet-53 (this impl.) | 1080ti   | 74       |
-
-    $ python3 detect.py --image_folder data/samples/
-
-<p align="center"><img src="assets/giraffe.png" width="480"\></p>
-<p align="center"><img src="assets/dog.png" width="480"\></p>
-<p align="center"><img src="assets/traffic.png" width="480"\></p>
-<p align="center"><img src="assets/messi.png" width="480"\></p>
-
-## Train
 ```
-$ train.py [-h] [--epochs EPOCHS] [--batch_size BATCH_SIZE]
-                [--gradient_accumulations GRADIENT_ACCUMULATIONS]
-                [--model_def MODEL_DEF] [--data_config DATA_CONFIG]
-                [--pretrained_weights PRETRAINED_WEIGHTS] [--n_cpu N_CPU]
-                [--img_size IMG_SIZE]
-                [--checkpoint_interval CHECKPOINT_INTERVAL]
-                [--evaluation_interval EVALUATION_INTERVAL]
-                [--compute_map COMPUTE_MAP]
-                [--multiscale_training MULTISCALE_TRAINING]
+git clone https://github.com.cnpmjs.org/SOVLOOKUP/PyTorch-YOLOv4
+cd PyTorch-YOLOv4/
+sudo pip3 install -r requirements.txt
 ```
 
-#### Example (COCO)
-To train on COCO using a Darknet-53 backend pretrained on ImageNet run: 
+
+### 下载预训练模型
+
 ```
-$ python3 train.py --data_config config/coco.data  --pretrained_weights weights/darknet53.conv.74
+$ cd weights/                                # Navigate to data dir
+$ bash download_weights.sh              # Will download coco dataset
 ```
 
-#### Training log
+### 另外如果你要查看COCO数据集
+
 ```
----- [Epoch 7/100, Batch 7300/14658] ----
-+------------+--------------+--------------+--------------+
-| Metrics    | YOLO Layer 0 | YOLO Layer 1 | YOLO Layer 2 |
-+------------+--------------+--------------+--------------+
-| grid_size  | 16           | 32           | 64           |
-| loss       | 1.554926     | 1.446884     | 1.427585     |
-| x          | 0.028157     | 0.044483     | 0.051159     |
-| y          | 0.040524     | 0.035687     | 0.046307     |
-| w          | 0.078980     | 0.066310     | 0.027984     |
-| h          | 0.133414     | 0.094540     | 0.037121     |
-| conf       | 1.234448     | 1.165665     | 1.223495     |
-| cls        | 0.039402     | 0.040198     | 0.041520     |
-| cls_acc    | 44.44%       | 43.59%       | 32.50%       |
-| recall50   | 0.361111     | 0.384615     | 0.300000     |
-| recall75   | 0.222222     | 0.282051     | 0.300000     |
-| precision  | 0.520000     | 0.300000     | 0.070175     |
-| conf_obj   | 0.599058     | 0.622685     | 0.651472     |
-| conf_noobj | 0.003778     | 0.004039     | 0.004044     |
-+------------+--------------+--------------+--------------+
-Total Loss 4.429395
----- ETA 0:35:48.821929
+$ cd data/                                # Navigate to data dir
+$ bash get_coco_dataset.sh                # Will download coco dataset
 ```
 
-#### Tensorboard
+## 数据准备
+
+使用 LabelImg 工具标注自行标注一批数据，大约每类 200 张以上即可训练出不错的效果。
+
+LabelImg：[https://github.com/tzutalin/labelImg](https://github.com/tzutalin/labelImg)
+
+标注要求：
+
+* 圈出验证码目标滑块区域的完整完整矩形，无需标注源滑块。
+* 目标矩形命名为 target 这个类别。
+* 建议使用 LabelImg 的快捷键提高标注效率。
+
+## 训练
+
+本项目已经提供了标注好的数据集，在 data/captcha，可以直接使用。
+
+当前数据训练命令：
+
+```
+python3 train.py --model_def config/yolov4-captcha.cfg --data_config config/captcha.data --pretrained_weights weights/pre/yolov4.conv.137
+
+```
+
+实测 P100 训练时长约 15 秒一个 epoch，大约几分钟即可训练出较好效果。
+
+### Tensorboard
 Track training progress in Tensorboard:
 * Initialize training
 * Run the command below
@@ -98,63 +62,91 @@ Track training progress in Tensorboard:
 $ tensorboard --logdir='logs' --port=6006
 ```
 
-## Train on Custom Dataset
+## 训练自定义数据集
 
-#### Custom model
-Run the commands below to create a custom model definition, replacing `<num-classes>` with the number of classes in your dataset.
+如果要训练自己的数据，数据格式准备见：[https://github.com/eriklindernoren/PyTorch-YOLOv3#train-on-custom-dataset](https://github.com/eriklindernoren/PyTorch-YOLOv3#train-on-custom-dataset)。
+
+使用下面的命令创建自定义模型, 替换 `<num-classes>` 为您数据集类别。
 
 ```
 $ cd config/                                # Navigate to config dir
-$ bash create_custom_model.sh <num-classes> # Will create custom model 'yolov3-custom.cfg'
+$ bash create_custom_model.sh <num-classes> # Will create custom model 'yolov4-custom.cfg'
 ```
 
-#### Classes
-Add class names to `data/custom/classes.names`. This file should have one row per class name.
-
-#### Image Folder
-Move the images of your dataset to `data/custom/images/`.
-
-#### Annotation Folder
-Move your annotations to `data/custom/labels/`. The dataloader expects that the annotation file corresponding to the image `data/custom/images/train.jpg` has the path `data/custom/labels/train.txt`. Each row in the annotation file should define one bounding box, using the syntax `label_idx x_center y_center width height`. The coordinates should be scaled `[0, 1]`, and the `label_idx` should be zero-indexed and correspond to the row number of the class name in `data/custom/classes.names`.
-
-#### Define Train and Validation Sets
-In `data/custom/train.txt` and `data/custom/valid.txt`, add paths to images that will be used as train and validation data respectively.
-
-#### Train
-To train on the custom dataset run:
+当前数据训练命令：
+```
+python3 train.py --model_def config/yolov4-custom.cfg --data_config config/{YourSetName}.data --pretrained_weights weights/pre/yolov4.conv.137
 
 ```
-$ python3 train.py --model_def config/yolov3-custom.cfg --data_config config/custom.data
-```
 
-Add `--pretrained_weights weights/darknet53.conv.74` to train using a backend pretrained on ImageNet.
+## 测试
 
+训练完毕之后会在 checkpoints 文件夹生成 pth 文件，可直接使用模型来预测生成标注结果。
 
-## Credit
-
-### YOLOv3: An Incremental Improvement
-_Joseph Redmon, Ali Farhadi_ <br>
-
-**Abstract** <br>
-We present some updates to YOLO! We made a bunch
-of little design changes to make it better. We also trained
-this new network that’s pretty swell. It’s a little bigger than
-last time but more accurate. It’s still fast though, don’t
-worry. At 320 × 320 YOLOv3 runs in 22 ms at 28.2 mAP,
-as accurate as SSD but three times faster. When we look
-at the old .5 IOU mAP detection metric YOLOv3 is quite
-good. It achieves 57.9 AP50 in 51 ms on a Titan X, compared
-to 57.5 AP50 in 198 ms by RetinaNet, similar performance
-but 3.8× faster. As always, all the code is online at
-https://pjreddie.com/yolo/.
-
-[[Paper]](https://pjreddie.com/media/files/papers/YOLOv3.pdf) [[Project Webpage]](https://pjreddie.com/darknet/yolo/) [[Authors' Implementation]](https://github.com/pjreddie/darknet)
+如之前跳过了 Git LFS 文件下载，则可以使用如下命令下载 Git LFS 文件：
 
 ```
-@article{yolov3,
-  title={YOLOv3: An Incremental Improvement},
-  author={Redmon, Joseph and Farhadi, Ali},
-  journal = {arXiv},
-  year={2018}
-}
+git lfs pull
 ```
+
+此时 checkpoints 文件夹会生成训练好的 pth 文件。
+
+当前数据测试命令：
+
+```
+python3 detect.py --model_def config/yolov4-captcha.cfg --weights_path checkpoints/yolov4_ckpt.pth --image_folder data/captcha/test --class_path data/captcha/classes.names
+
+```
+
+该脚本会读取 captcha 下的 test 文件夹所有图片，并将处理后的结果输出到 test 文件夹。
+
+运行结果样例：
+
+```
+Performing object detection:
+        + Batch 0, Inference Time: 0:00:00.044223
+        + Batch 1, Inference Time: 0:00:00.028566
+        + Batch 2, Inference Time: 0:00:00.029764
+        + Batch 3, Inference Time: 0:00:00.032430
+        + Batch 4, Inference Time: 0:00:00.033373
+        + Batch 5, Inference Time: 0:00:00.027861
+        + Batch 6, Inference Time: 0:00:00.031444
+        + Batch 7, Inference Time: 0:00:00.032110
+        + Batch 8, Inference Time: 0:00:00.029131
+
+Saving images:
+(0) Image: 'data/captcha/test/captcha_4497.png'
+        + Label: target, Conf: 0.99999
+(1) Image: 'data/captcha/test/captcha_4498.png'
+        + Label: target, Conf: 0.99999
+(2) Image: 'data/captcha/test/captcha_4499.png'
+        + Label: target, Conf: 0.99997
+(3) Image: 'data/captcha/test/captcha_4500.png'
+        + Label: target, Conf: 0.99999
+(4) Image: 'data/captcha/test/captcha_4501.png'
+        + Label: target, Conf: 0.99997
+(5) Image: 'data/captcha/test/captcha_4502.png'
+        + Label: target, Conf: 0.99999
+(6) Image: 'data/captcha/test/captcha_4503.png'
+        + Label: target, Conf: 0.99997
+(7) Image: 'data/captcha/test/captcha_4504.png'
+        + Label: target, Conf: 0.99998
+(8) Image: 'data/captcha/test/captcha_4505.png'
+        + Label: target, Conf: 0.99998
+```
+
+样例结果：
+
+![](data/captcha/result/captcha_4501.png)
+
+![](data/captcha/result/captcha_4505.png)
+
+![](data/captcha/result/captcha_4503.png)
+
+## 协议
+
+本项目基于开源 [GNU 协议](https://github.com/eriklindernoren/PyTorch-YOLOv3/blob/master/LICENSE)，另外本项目不提供任何有关滑动轨迹相关模拟和 JavaScript 逆向分析方案。
+
+本项目仅供学习交流使用，请勿用于非法用途，本人不承担任何法律责任。
+
+如有侵权请联系个人删除，谢谢。

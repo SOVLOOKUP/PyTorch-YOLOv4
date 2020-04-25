@@ -1,11 +1,11 @@
 
 
 def parse_model_config(path):
-    """Parses the yolo-v3 layer configuration file and returns module definitions"""
+    """Parses the yolo-v4 layer configuration file and returns module definitions"""
     file = open(path, 'r')
     lines = file.read().split('\n')
-    lines = [x for x in lines if x and not x.startswith('#')]
-    lines = [x.rstrip().lstrip() for x in lines] # get rid of fringe whitespaces
+    lines = (x for x in lines if x and not x.startswith('#'))
+    lines = (x.rstrip().lstrip() for x in lines) # get rid of fringe whitespaces
     module_defs = []
     for line in lines:
         if line.startswith('['): # This marks the start of a new block
@@ -34,3 +34,5 @@ def parse_data_config(path):
         key, value = line.split('=')
         options[key.strip()] = value.strip()
     return options
+
+

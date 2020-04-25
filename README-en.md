@@ -1,11 +1,11 @@
 # PyTorch-YOLOv4
 
-YOLOv4的最小PyTorch实现，并支持训练，推断和评估，基于 [https://github.com/eriklindernoren/PyTorch-YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) & [https://github.com/Python3WebSpider/DeepLearningSlideCaptcha](https://github.com/Python3WebSpider/DeepLearningSlideCaptcha)修改。
+Minimal PyTorch implementation of YOLOv4。
+fork from [https://github.com/eriklindernoren/PyTorch-YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) & [https://github.com/Python3WebSpider/DeepLearningSlideCaptcha](https://github.com/Python3WebSpider/DeepLearningSlideCaptcha)
 
-[En-README](./README-en.md) is in building...
-## 克隆项目
+## Clone PyTorch-YOLOv4
 
-### 克隆部署命令
+### Clone and install requirements
 
 ```
 git clone https://github.com.cnpmjs.org/SOVLOOKUP/PyTorch-YOLOv4
@@ -14,14 +14,14 @@ sudo pip3 install -r requirements.txt
 ```
 
 
-### 下载预训练模型
+### Download pretrained weights
 
 ```
 $ cd weights/                                # Navigate to data dir
 $ bash download_weights.sh              # Will download coco dataset
 ``` 
 
-### 另外如果你要查看COCO数据集
+### Download COCO
 
 ```
 $ cd data/                                # Navigate to data dir

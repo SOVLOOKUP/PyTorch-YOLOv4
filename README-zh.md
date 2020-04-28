@@ -1,11 +1,11 @@
 # PyTorch-YOLOv4
 
-Minimal PyTorch implementation of YOLOv4。
-fork from [https://github.com/eriklindernoren/PyTorch-YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) & [https://github.com/Python3WebSpider/DeepLearningSlideCaptcha](https://github.com/Python3WebSpider/DeepLearningSlideCaptcha)
+YOLOv4的最小PyTorch实现，开箱即用，并支持训练，推断和评估，基于 [https://github.com/eriklindernoren/PyTorch-YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) & [https://github.com/Python3WebSpider/DeepLearningSlideCaptcha](https://github.com/Python3WebSpider/DeepLearningSlideCaptcha)修改。
 
-## Clone PyTorch-YOLOv4
+[En-README](./README-en.md) is in building...
+## 克隆项目
 
-### Clone and install requirements
+### 克隆部署命令
 
 ```
 git clone https://github.com.cnpmjs.org/SOVLOOKUP/PyTorch-YOLOv4
@@ -14,44 +14,44 @@ sudo pip3 install -r requirements.txt
 ```
 
 
-### Download pretrained weights
+### 下载预训练模型
 
 ```
 $ cd weights/                                # Navigate to data dir
 $ bash download_weights.sh              # Will download coco dataset
 ``` 
 
-### Download COCO
+### 另外如果你要查看COCO数据集
 
-*it is not necessary*  
-I use an another dataset to test yolov4 but if you want test it on coco you can download it.
 ```
 $ cd data/                                # Navigate to data dir
 $ bash get_coco_dataset.sh                # Will download coco dataset
 ```
 
-## Prepare data
+## 数据准备
 
-Use LabelImg to mark your datas in browser.
+使用 LabelImg 工具标注自行标注一批数据，大约每类 200 张以上即可训练出不错的效果。
 
 LabelImg：[https://github.com/tzutalin/labelImg](https://github.com/tzutalin/labelImg)
 
-Or you can use Yolomark.
+标注要求：
 
-Yolomark: [https://github.com/AlexeyAB/Yolo_mark](https://github.com/AlexeyAB/Yolo_mark)
+* 圈出验证码目标滑块区域的完整完整矩形，无需标注源滑块。
+* 目标矩形命名为 target 这个类别。
+* 建议使用 LabelImg 的快捷键提高标注效率。
 
-## Train
+## 训练
 
-Slider verification data set has been prepared in `<data/captcha>`.
+本项目已经提供了标注好的数据集，在 data/captcha，可以直接使用。
 
-training commond：
+当前数据训练命令：
 
 ```
 python3 train.py --model_def config/yolov4-captcha.cfg --data_config config/captcha.data --pretrained_weights weights/pre/yolov4.conv.137
 
 ```
 
-
+实测 P100 训练时长约 15 秒一个 epoch，大约几分钟即可训练出较好效果。
 
 ### Tensorboard
 Track training progress in Tensorboard:
@@ -63,7 +63,24 @@ Track training progress in Tensorboard:
 $ tensorboard --logdir='logs' --port=6006
 ```
 
-## Test
+## 训练自定义数据集
+
+如果要训练自己的数据，数据格式准备见：[https://github.com/eriklindernoren/PyTorch-YOLOv3#train-on-custom-dataset](https://github.com/eriklindernoren/PyTorch-YOLOv3#train-on-custom-dataset)。
+
+使用下面的命令创建自定义模型, 替换 `<num-classes>` 为您数据集类别。
+
+```
+$ cd config/                                # Navigate to config dir
+$ bash create_custom_model.sh <num-classes> # Will create custom model 'yolov4-custom.cfg'
+```
+
+当前数据训练命令：
+```
+python3 train.py --model_def config/yolov4-custom.cfg --data_config config/{YourSetName}.data --pretrained_weights weights/pre/yolov4.conv.137
+
+```
+
+## 测试
 
 训练完毕之后会在 checkpoints 文件夹生成 pth 文件，可直接使用模型来预测生成标注结果。
 
@@ -84,7 +101,7 @@ python3 detect.py --model_def config/yolov4-captcha.cfg --weights_path checkpoin
 
 该脚本会读取 captcha 下的 test 文件夹所有图片，并将处理后的结果输出到 test 文件夹。
 
-OutPut：
+运行结果样例：
 
 ```
 Performing object detection:
@@ -119,34 +136,13 @@ Saving images:
         + Label: target, Conf: 0.99998
 ```
 
-Results：
+样例结果：
 
 ![](data/captcha/result/captcha_4501.png)
 
 ![](data/captcha/result/captcha_4505.png)
 
 ![](data/captcha/result/captcha_4503.png)
-
-
-## Train and detect your custom objects
-
-1. format your data：[https://github.com/eriklindernoren/PyTorch-YOLOv3#train-on-custom-dataset](https://github.com/eriklindernoren/PyTorch-YOLOv3#train-on-custom-dataset)。
-
-2. create your model-config:
-
-replace `<num-classes>` with your num-classes
-
-```
-$ cd config/                                # Navigate to config dir
-$ bash create_custom_model.sh <num-classes> # Will create custom model 'yolov4-custom.cfg'
-```
-
-3. train it
-training commond：
-```
-python3 train.py --model_def config/yolov4-custom.cfg --data_config config/{YourSetName}.data --pretrained_weights weights/pre/yolov4.conv.137
-
-```
 
 ## 协议
 
@@ -155,10 +151,3 @@ python3 train.py --model_def config/yolov4-custom.cfg --data_config config/{Your
 本项目仅供学习交流使用，请勿用于非法用途，本人不承担任何法律责任。
 
 如有侵权请联系个人删除，谢谢。
-
-@article{yolov4,
-  title={YOLOv4: YOLOv4: Optimal Speed and Accuracy of Object Detection},
-  author={Alexey Bochkovskiy, Chien-Yao Wang, Hong-Yuan Mark Liao},
-  journal = {arXiv},
-  year={2020}
-}

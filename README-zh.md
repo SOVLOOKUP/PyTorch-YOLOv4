@@ -2,7 +2,7 @@
 
 YOLOv4的最小PyTorch实现，开箱即用，并支持训练，推断和评估，基于 [https://github.com/eriklindernoren/PyTorch-YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) & [https://github.com/Python3WebSpider/DeepLearningSlideCaptcha](https://github.com/Python3WebSpider/DeepLearningSlideCaptcha)修改。
 
-[En-README](./README-en.md) is in building...
+[English](./README.md)
 ## 克隆项目
 
 ### 克隆部署命令

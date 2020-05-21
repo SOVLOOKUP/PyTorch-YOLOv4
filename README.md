@@ -18,8 +18,8 @@ sudo pip3 install -r requirements.txt
 ### Download pretrained weights
 
 ```
-$ cd weights/                                # Navigate to data dir
-$ bash download_weights.sh              # Will download coco dataset
+$ cd weights/                                # Navigate to weights dir
+$ bash download_weights.sh              # Will download pretrain models
 ``` 
 
 ### Download COCO

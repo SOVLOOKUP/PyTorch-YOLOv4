@@ -6,8 +6,8 @@ import torch.nn.functional as F
 import numpy as np
 
 from utils.mish import Mish
-from utils.utils import build_targets, to_cpu, parse_model_config
-
+from utils.utils import build_targets, to_cpu
+from utils import parse_model_config
 
 def create_modules(module_defs):
     """
